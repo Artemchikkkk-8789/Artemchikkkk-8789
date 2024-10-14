@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstring>  
+using namespace std;
+class Airplane {
+private:
+    char *model; 
+    int power;   
+public:
+    Airplane() : model(nullptr), power(0) {}
+    Airplane(const char *model) {
+        this->model = new char[strlen(model) + 1];
+        strcpy(this->model, model);
+        this->power = 0;
+    }
+    Airplane(const Airplane &other) {
+        model = new char[strlen(other.model) + 1];
+        strcpy(model, other.model);
+        power = other.power;
+    }
+    ~Airplane() {
+        delete[] model;
+    }
+    void setModel(const char *model) {
+        delete[] this->model;
+        this->model = new char[strlen(model) + 1];
+        strcpy(this->model, model);
+    }
+    const char *getModel() const {
+        return model;
+    }
+    void setPower(int power) {
+        this->power = power;
+    }
+    int getPower() const {
+        return power;
+    }
+    void print() const {
+        cout << "Модель: " << (model ? model : "невідомо") << ", Потужність: " << power << endl;
+    }
+    void input() {
+        char buffer[100];
+        cout << "Введіть модель літака: ";
+        cin >> buffer;
+        setModel(buffer);
+        cout << "Введіть потужність літака: ";
+        cin >> power;
+    }
+};
+class List {
+private:
+    Airplane airplane;
+    List *next;
+public:
+    List(const Airplane &airplane, List *next = nullptr) : airplane(airplane), next(next) {}
+    ~List() {
+        delete next; 
+    }
+    void print() const {
+        airplane.print();
+        if (next) {
+            next->print();
+        }
+    }
+};
+int main() {
+    List *myList = nullptr;
+    for (int i = 0; i < 3; ++i) {
+        Airplane a;
+        a.input();
+        myList = new List(a, myList); 
+    }
+    cout << "Список літаків:" << endl;
+    myList->print(); 
+    delete myList; 
+    return 0;
+}
