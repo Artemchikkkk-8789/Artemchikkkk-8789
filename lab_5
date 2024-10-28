@@ -1,0 +1,100 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Publication {
+protected:
+    string title;
+    float price;
+
+public:
+    virtual void getData() = 0; // віртуальний метод для отримання даних
+    virtual void printData() const = 0; // віртуальний метод для виводу даних
+    virtual bool isOversized() const = 0; // новий віртуальний метод
+    virtual string getTitle() const { return title; } // метод для отримання заголовка
+    virtual ~Publication() {}
+};
+
+class Book : public Publication {
+private:
+    int pages;
+
+public:
+    void getData() override {
+        cout << "Введіть назву книги: ";
+        getline(cin, title);
+        cout << "Введіть ціну книги: ";
+        cin >> price;
+        cout << "Введіть кількість сторінок: ";
+        cin >> pages;
+        cin.ignore(); // очищення буфера
+    }
+
+    void printData() const override {
+        cout << "Назва книги: " << title << ", Ціна: " << price << ", Сторінки: " << pages << endl;
+    }
+
+    bool isOversized() const override {
+        return pages > 800;
+    }
+};
+
+class AudioBook : public Publication {
+private:
+    float duration;
+
+public:
+    void getData() override {
+        cout << "Введіть назву аудіокниги: ";
+        getline(cin, title);
+        cout << "Введіть ціну аудіокниги: ";
+        cin >> price;
+        cout << "Введіть тривалість у хвилинах: ";
+        cin >> duration;
+        cin.ignore(); // очищення буфера
+    }
+
+    void printData() const override {
+        cout << "Назва аудіокниги: " << title << ", Ціна: " << price << ", Тривалість: " << duration << " хв" << endl;
+    }
+
+    bool isOversized() const override {
+        return duration > 90;
+    }
+};
+
+int main() {
+    const int SIZE = 4; // або ваш розмір масиву
+    Publication* publications[SIZE];
+
+    // Заповнення масиву публікацій
+    for (int i = 0; i < SIZE; i++) {
+        int choice;
+        cout << "Введіть 1 для книги або 2 для аудіокниги: ";
+        cin >> choice;
+        cin.ignore(); // очищення буфера
+
+        if (choice == 1) {
+            publications[i] = new Book();
+        } else {
+            publications[i] = new AudioBook();
+        }
+        
+        publications[i]->getData();
+    }
+
+    // Перевірка публікацій
+    for (int i = 0; i < SIZE; i++) {
+        publications[i]->printData(); // Виводимо дані публікацій
+        if (publications[i]->isOversized()) {
+            cout << "Перевищена публікація: " << publications[i]->getTitle() << endl; // Використовуємо метод для отримання заголовка
+        }
+    }
+
+    // Очищення пам'яті
+    for (int i = 0; i < SIZE; i++) {
+        delete publications[i];
+    }
+
+    return 0;
+}
