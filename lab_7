@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+
+template <typename T, int MaxSize>
+class Queue {
+private:
+    T* data[MaxSize]; // масив вказівників типу T
+    int front;        // індекс початку черги
+    int rear;         // індекс кінця черги
+    int size;         // поточна кількість елементів у черзі
+
+public:
+    // Конструктор
+    Queue() : front(0), rear(-1), size(0) {}
+
+    // Додавання елемента в чергу
+    void enqueue(const T& element) {
+        if (size >= MaxSize) {
+            cout << "Черга переповнена!" << endl;
+            return;
+        }
+        rear = (rear + 1) % MaxSize;
+        data[rear] = new T(element); // виділення пам'яті та копіювання елемента
+        size++;
+    }
+
+    // Видалення елемента з черги
+    void dequeue() {
+        if (size <= 0) {
+            cout << "Черга порожня!" << endl;
+            return;
+        }
+        delete data[front]; // звільнення пам'яті
+        front = (front + 1) % MaxSize;
+        size--;
+    }
+
+    // Виведення всіх елементів черги на екран
+    void display() const {
+        if (size <= 0) {
+            cout << "Черга порожня!" << endl;
+            return;
+        }
+        int index = front;
+        for (int i = 0; i < size; i++) {
+            cout << *(data[index]) << " ";
+            index = (index + 1) % MaxSize;
+        }
+        cout << endl;
+    }
+
+    // Повернення кількості елементів черги
+    int getSize() const {
+        return size;
+    }
+
+    // Деструктор для звільнення пам'яті
+    ~Queue() {
+        for (int i = 0; i < size; i++) {
+            delete data[(front + i) % MaxSize];
+        }
+    }
+};
+
+int main() {
+    Queue<int, 5> queue;
+    // Додавання елементів у чергу
+    queue.enqueue(10);
+    queue.enqueue(20);
+    queue.enqueue(30);
+    queue.enqueue(40);
+    queue.enqueue(50);
+
+    cout << "Черга після додавання елементів: ";
+    queue.display();
+
+    cout << "Кількість елементів у черзі: " << queue.getSize() << endl;
+
+    // Видалення двох елементів з черги
+    queue.dequeue();
+    queue.dequeue();
+
+    cout << "Черга після видалення двох елементів: ";
+    queue.display();
+
+    cout << "Кількість елементів у черзі: " << queue.getSize() << endl;
+
+    // Спроба додати ще елементи
+    queue.enqueue(60);
+    queue.enqueue(70);
+
+    cout << "Черга після додавання ще двох елементів: ";
+    queue.display();
+
+    cout << "Кількість елементів у черзі: " << queue.getSize() << endl;
+
+    return 0;
+}
