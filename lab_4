@@ -1,0 +1,104 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Toy {
+protected:
+    string name; // назва іграшки
+    float price; // ціна
+
+public:
+    // Конструктори
+    Toy() : name(""), price(0.0) {}
+    Toy(string n, float p) : name(n), price(p) {}
+
+    // Введення даних
+    virtual void inputData() {
+        cout << "Введіть назву іграшки: ";
+        cin >> name;
+        cout << "Введіть ціну іграшки: ";
+        cin >> price;
+    }
+
+    // Виведення даних
+    virtual void outputData() {
+        cout << "Назва іграшки: " << name << endl;
+        cout << "Ціна іграшки: " << price << endl;
+    }
+};
+
+class EducationalToy : public Toy {
+private:
+    string subject; // навчальний предмет
+    int complexityLevel; // рівень складності
+
+public:
+    // Конструктори
+    EducationalToy() : Toy(), subject(""), complexityLevel(0) {}
+    EducationalToy(string n, float p, string s, int cl)
+        : Toy(n, p), subject(s), complexityLevel(cl) {}
+
+    // Введення даних
+    void inputData() override {
+        Toy::inputData();
+        cout << "Введіть навчальний предмет: ";
+        cin >> subject;
+        cout << "Введіть рівень складності: ";
+        cin >> complexityLevel;
+    }
+
+    // Виведення даних
+    void outputData() override {
+        Toy::outputData();
+        cout << "Навчальний предмет: " << subject << endl;
+        cout << "Рівень складності: " << complexityLevel << endl;
+    }
+};
+
+class BoardGameToy : public Toy {
+private:
+    int numberOfPlayers; // кількість гравців
+    string rules; // правила гри
+
+public:
+    // Конструктори
+    BoardGameToy() : Toy(), numberOfPlayers(0), rules("") {}
+    BoardGameToy(string n, float p, int nop, string r)
+        : Toy(n, p), numberOfPlayers(nop), rules(r) {}
+
+    // Введення даних
+    void inputData() override {
+        Toy::inputData();
+        cout << "Введіть кількість гравців: ";
+        cin >> numberOfPlayers;
+        cout << "Введіть правила гри: ";
+        cin >> rules;
+    }
+
+    // Виведення даних
+    void outputData() override {
+        Toy::outputData();
+        cout << "Кількість гравців: " << numberOfPlayers << endl;
+        cout << "Правила гри: " << rules << endl;
+    }
+};
+
+int main() {
+    EducationalToy eduToy;
+    BoardGameToy boardGame;
+
+    cout << "Введення даних для навчальної іграшки:" << endl;
+    eduToy.inputData();
+
+    cout << "\nВведення даних для настільної гри:" << endl;
+    boardGame.inputData();
+
+    cout << "\nДані навчальної іграшки:" << endl;
+    eduToy.outputData();
+
+    cout << "\nДані настільної гри:" << endl;
+    boardGame.outputData();
+
+    return 0;
+}
