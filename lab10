@@ -1,0 +1,101 @@
+// mainwindow.h
+#include <QFileDialog>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
+QT_END_NAMESPACE
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+
+private slots:
+    void OpenModalDialog();
+    void OpenNotModalDialog();
+    void toggleConnections();
+
+private:
+    Ui::MainWindow *ui;
+    QPushButton *pbOpenModalDialog;
+    QPushButton *pbOpenNotModalDialog;
+    QPushButton *pbToggleConnection;
+    bool signalsConnected = true; // Для збереження стану підключення
+};
+
+
+// mainwindow.cpp
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    // Створення кнопок
+    pbOpenModalDialog = new QPushButton("Відкрити модальне вікно", this);
+    pbOpenNotModalDialog = new QPushButton("Відкрити не модальне вікно", this);
+    pbToggleConnection = new QPushButton("Відключити", this);
+
+    // Створення вертикального макету
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(pbOpenModalDialog);
+    layout->addWidget(pbOpenNotModalDialog);
+    layout->addWidget(pbToggleConnection);
+
+    // Встановлення макету для центрального віджету
+    QWidget *centralWidget = new QWidget(this);
+    centralWidget->setLayout(layout);
+    setCentralWidget(centralWidget);
+
+    // Підключення сигналів до слотів
+    connect(pbOpenModalDialog, &QPushButton::clicked, this, &MainWindow::OpenModalDialog);
+    connect(pbOpenNotModalDialog, &QPushButton::clicked, this, &MainWindow::OpenNotModalDialog);
+    connect(pbToggleConnection, &QPushButton::clicked, this, &MainWindow::toggleConnections);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::OpenModalDialog()
+{
+    QMessageBox::critical(this, "Critical Error", "This is a critical error message.");
+}
+
+void MainWindow::OpenNotModalDialog()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Open File", "", "All Files (*)");
+    if (!fileName.isEmpty()) {
+        // Обробка вибору файлу
+    }
+}
+
+void MainWindow::toggleConnections()
+{
+    if (signalsConnected) {
+        disconnect(pbOpenModalDialog, &QPushButton::clicked, this, &MainWindow::OpenModalDialog);
+        disconnect(pbOpenNotModalDialog,
+                   &QPushButton::clicked,
+                   this,
+                   &MainWindow::OpenNotModalDialog);
+        pbToggleConnection->setText("Підключити");
+    } else {
+        connect(pbOpenModalDialog, &QPushButton::clicked, this, &MainWindow::OpenModalDialog);
+        connect(pbOpenNotModalDialog, &QPushButton::clicked, this, &MainWindow::OpenNotModalDialog);
+        pbToggleConnection->setText("Відключити");
+    }
+    signalsConnected = !signalsConnected;
+}
