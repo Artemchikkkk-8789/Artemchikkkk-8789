@@ -1,0 +1,162 @@
+// product.h
+#ifndef PRODUCT_H
+#define PRODUCT_H
+
+#include <QString>
+
+class Product
+{
+public:
+    Product(int id,
+            const QString &name,
+            const QString &manufacturer,
+            double price,
+            int shelfLife,
+            int quantity)
+        : id(id)
+        , name(name)
+        , manufacturer(manufacturer)
+        , price(price)
+        , shelfLife(shelfLife)
+        , quantity(quantity)
+    {}
+
+    QString toString() const
+    {
+        return QString("ID: %1\nНазва: %2\nВиробник: %3\nЦіна: %4\nТермін зберігання: %5 "
+                       "днів\nКількість: %6")
+            .arg(id)
+            .arg(name)
+            .arg(manufacturer)
+            .arg(price)
+            .arg(shelfLife)
+            .arg(quantity);
+    }
+
+private:
+    int id;
+    QString name;
+    QString manufacturer;
+    double price;
+    int shelfLife; // термін зберігання в днях
+    int quantity;
+};
+
+#endif // PRODUCT_H
+
+//mainwindow.h
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QString>
+#include <QVBoxLayout>
+#include "product.h" // Додайте заголовок класу Product
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
+QT_END_NAMESPACE
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+
+private slots:
+    void on_createObject_clicked();
+    void on_exit_clicked();
+
+private:
+    QLineEdit *lineEditId;
+    QLineEdit *lineEditName;
+    QLineEdit *lineEditManufacturer;
+    QLineEdit *lineEditPrice;
+    QLineEdit *lineEditShelfLife;
+    QLineEdit *lineEditQuantity;
+    QLabel *label;
+
+    QPushButton *pbCreateObject;
+};
+
+#endif // MAINWINDOW_H
+
+// mainwindow.cpp
+#include "mainwindow.h"
+#include <QApplication>
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+{
+    // Створення елементів інтерфейсу
+    lineEditId = new QLineEdit(this);
+    lineEditName = new QLineEdit(this);
+    lineEditManufacturer = new QLineEdit(this);
+    lineEditPrice = new QLineEdit(this);
+    lineEditShelfLife = new QLineEdit(this);
+    lineEditQuantity = new QLineEdit(this);
+    label = new QLabel("Дані продукту", this);
+
+    pbCreateObject = new QPushButton("Створити продукт", this);
+    QPushButton *pbExit = new QPushButton("Exit", this);
+
+    // Створення макету
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(new QLabel("ID:", this));
+    layout->addWidget(lineEditId);
+    layout->addWidget(new QLabel("Назва:", this));
+    layout->addWidget(lineEditName);
+    layout->addWidget(new QLabel("Виробник:", this));
+    layout->addWidget(lineEditManufacturer);
+    layout->addWidget(new QLabel("Ціна:", this));
+    layout->addWidget(lineEditPrice);
+    layout->addWidget(new QLabel("Термін зберігання (днів):", this));
+    layout->addWidget(lineEditShelfLife);
+    layout->addWidget(new QLabel("Кількість:", this));
+    layout->addWidget(lineEditQuantity);
+    layout->addWidget(pbCreateObject);
+    layout->addWidget(pbExit);
+    layout->addWidget(label);
+
+    // Встановлення макету для центрального віджету
+    QWidget *centralWidget = new QWidget(this);
+    centralWidget->setLayout(layout);
+    setCentralWidget(centralWidget);
+
+    // Підключення сигналів до слотів
+    connect(pbCreateObject, &QPushButton::clicked, this, &MainWindow::on_createObject_clicked);
+    connect(pbExit, &QPushButton::clicked, this, &MainWindow::on_exit_clicked);
+}
+
+MainWindow::~MainWindow() {}
+
+void MainWindow::on_createObject_clicked()
+{
+    bool okId, okPrice, okShelfLife, okQuantity;
+    int id = lineEditId->text().toInt(&okId);
+    double price = lineEditPrice->text().toDouble(&okPrice);
+    int shelfLife = lineEditShelfLife->text().toInt(&okShelfLife);
+    int quantity = lineEditQuantity->text().toInt(&okQuantity);
+
+    if (okId && okPrice && okShelfLife && okQuantity) {
+        QString name = lineEditName->text();
+        QString manufacturer = lineEditManufacturer->text();
+        Product product(id, name, manufacturer, price, shelfLife, quantity);
+        label->setText(product.toString());
+    } else {
+        label->setText("Введіть коректні значення!");
+    }
+}
+
+void MainWindow::on_exit_clicked()
+{
+    QApplication::exit();
+}
